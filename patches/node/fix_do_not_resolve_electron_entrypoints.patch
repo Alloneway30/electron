@@ -6,7 +6,7 @@ Subject: fix: do not resolve electron entrypoints
 This wastes fs cycles and can result in strange behavior if this path actually exists on disk
 
 diff --git a/lib/internal/modules/esm/load.js b/lib/internal/modules/esm/load.js
-index c9d4a3536d0f60375ae623b48ca2fa7095c88d42..d818320fbbc430d06a0c2852e4723981d6e1a844 100644
+index c9d4a3536d0f60375ae623b48ca2fa7095c88d42..3cd42f3dd68c76768d6151cdae123374c2451a7f 100644
 --- a/lib/internal/modules/esm/load.js
 +++ b/lib/internal/modules/esm/load.js
 @@ -109,7 +109,7 @@ async function defaultLoad(url, context = kEmptyObject) {
@@ -18,6 +18,15 @@ index c9d4a3536d0f60375ae623b48ca2fa7095c88d42..d818320fbbc430d06a0c2852e4723981
        ({ responseURL, source } = await getSource(urlInstance, context));
        context = { __proto__: context, source };
      }
+@@ -168,7 +168,7 @@ function defaultLoadSync(url, context = kEmptyObject) {
+ 
+   if (urlInstance.protocol === 'node:') {
+     source = null;
+-  } else if (source == null) {
++  } else if (format !== 'electron' && source == null) {
+     ({ responseURL, source } = getSourceSync(urlInstance, context));
+     context.source = source;
+   }
 diff --git a/lib/internal/modules/esm/translators.js b/lib/internal/modules/esm/translators.js
 index 0caba80bb213e0edfb1f834250f895ccc05d0d1c..6feab19d24a3524e36c5ed3bbac53cba0fa298c7 100644
 --- a/lib/internal/modules/esm/translators.js
